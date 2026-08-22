@@ -1,0 +1,23 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1080
+PlayResY: 1920
+WrapStyle: 0
+ScaledBorderAndShadow: yes
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Caption,Inter,68,&H00FFFFFF,&H000000FF,&H00101820,&H64000000,-1,0,0,0,100,100,0,0,1,5,0,5,80,80,320,1
+Style: Label,Inter,28,&H00D6F0E4,&H000000FF,&H00101820,&H00000000,-1,0,0,0,100,100,0,0,1,0,0,8,50,50,90,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.00,0:00:52.03,Label,,0,0,0,,PLAIN-ENGLISH MONEY
+Dialogue: 0,0:00:00.08,0:00:06.66,Caption,,0,0,0,,An emergency fund is not\\Nleftover cash. It is money\\Nthat stops a surprise from
+Dialogue: 0,0:00:06.66,0:00:12.47,Caption,,0,0,0,,It is a cash buffer you can\\Nspend this week without\\Nselling investments or
+Dialogue: 0,0:00:12.47,0:00:18.66,Caption,,0,0,0,,It is not your retirement\\Naccount, not stocks, and not\\Nthe checking account you
+Dialogue: 0,0:00:18.66,0:00:25.63,Caption,,0,0,0,,Without it, a car repair or\\Nmissed paycheck often hits a\\Ncard, and interest adds a
+Dialogue: 0,0:00:25.63,0:00:32.21,Caption,,0,0,0,,Start with one thousand\\Ndollars. Then aim for three\\Nmonths of must-pay bills,
+Dialogue: 0,0:00:32.21,0:00:39.56,Caption,,0,0,0,,Keep it in a separate\\Nsavings account you can\\Nreach in a day or two. Not
+Dialogue: 0,0:00:39.56,0:00:44.98,Caption,,0,0,0,,If you would hesitate to use\\Nit tomorrow, it is not an\\Nemergency fund.
+Dialogue: 0,0:00:44.98,0:00:51.99,Caption,,0,0,0,,Save this, then do one step\\Ntoday: open a separate\\Nsavings account or move your
