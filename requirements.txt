@@ -1,0 +1,3 @@
+# Optional. Gives the most watchable voice.
+# Uses Microsoft online neural voices (network required).
+edge-tts>=7.0.0

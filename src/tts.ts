@@ -1,157 +1,216 @@
-import { spawn } from "node:child_process";
-import { writeFile } from "node:fs/promises";
-import { existsSync } from "node:fs";
+import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { commandExists, run } from "./run.ts";
+import type { TtsEngine, WordTiming } from "./types.ts";
+import { estimateWordTimings, narrationText, scaleWordTimings } from "./timing.ts";
+import { MAX_VIDEO_SECONDS, MIN_VIDEO_SECONDS } from "./validate.ts";
+
+export type TtsResult = {
+  engine: TtsEngine;
+  duration: number;
+  words: WordTiming[];
+  network: boolean;
+};
 
 const ESPEAK_BIN = process.env.ESPEAK_BIN ?? "espeak-ng";
+const PIPER_BIN = process.env.PIPER_BIN ?? "piper";
+const PYTHON_BIN = process.env.PYTHON_BIN ?? "python3";
+const EDGE_VOICE = process.env.EDGE_TTS_VOICE ?? "en-US-JennyNeural";
+const EDGE_RATE = process.env.EDGE_TTS_RATE ?? "+12%";
 
-export type TtsEngine = "espeak-ng" | "mock";
+const EDGE_HELPER = path.join(
+  path.dirname(fileURLToPath(import.meta.url)),
+  "..",
+  "tools",
+  "edge_tts_synth.py",
+);
 
-function commandExists(bin: string): boolean {
-  if (bin.includes("/")) {
-    return existsSync(bin);
+export { narrationText };
+
+async function pythonHasEdgeTts(): Promise<boolean> {
+  if (!commandExists(PYTHON_BIN)) {
+    return false;
   }
-  const path = process.env.PATH ?? "";
-  return path.split(":").some((dir) => existsSync(`${dir}/${bin}`));
+  try {
+    await run(PYTHON_BIN, ["-c", "import edge_tts"]);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
-export function resolveTtsEngine(): TtsEngine {
-  if (process.env.FORCE_MOCK_TTS === "1") {
-    return "mock";
+export async function resolveTtsEngine(): Promise<TtsEngine> {
+  const forced = process.env.YT_FACTORY_TTS;
+  if (forced === "edge-tts" || forced === "piper" || forced === "espeak-ng") {
+    return forced;
   }
-  // Local/open TTS when present. No cloud key is required.
-  // If someone later sets a TTS key, this slice still stays local.
+  if (await pythonHasEdgeTts()) {
+    return "edge-tts";
+  }
+  if (commandExists(PIPER_BIN) && process.env.PIPER_MODEL) {
+    return "piper";
+  }
   if (commandExists(ESPEAK_BIN)) {
     return "espeak-ng";
   }
-  return "mock";
+  throw new Error(
+    "No real TTS found. Install edge-tts (`pip install edge-tts`, uses Microsoft online voices), piper (set PIPER_MODEL), or espeak-ng. There is no silent mock-TTS fallback.",
+  );
 }
 
-function run(bin: string, args: string[], stdin: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    const child = spawn(bin, args, { stdio: ["pipe", "ignore", "pipe"] });
-    const err: string[] = [];
-    child.stderr.on("data", (chunk: Buffer) => err.push(chunk.toString()));
-    child.on("error", reject);
-    child.on("close", (code) => {
-      if (code === 0) {
-        resolve();
-        return;
-      }
-      reject(new Error(`${bin} exited ${code}: ${err.join("").trim()}`));
-    });
-    child.stdin.end(stdin);
-  });
-}
-
-/**
- * Tiny formant-ish synthesizer so a machine without espeak-ng still
- * gets a spoken-length voice track. Clearly a mock, not a product voice.
- */
-function synthesizeMockWav(text: string): Buffer {
-  const sampleRate = 22050;
-  const formants: Record<string, [number, number, number]> = {
-    a: [730, 1090, 2440],
-    e: [530, 1840, 2480],
-    i: [270, 2290, 3010],
-    o: [570, 840, 2410],
-    u: [300, 870, 2240],
-    y: [300, 1870, 2800],
-  };
-
-  const samples: number[] = [];
-  let phase = 0;
-  let f1z1 = 0;
-  let f1z2 = 0;
-  let f2z1 = 0;
-  let f2z2 = 0;
-
-  const pushSilence = (seconds: number) => {
-    const n = Math.floor(seconds * sampleRate);
-    for (let i = 0; i < n; i += 1) {
-      samples.push(0);
-    }
-  };
-
-  const resonate = (
-    input: number,
-    freq: number,
-    z1: number,
-    z2: number,
-  ): { out: number; z1: number; z2: number } => {
-    const r = 0.92;
-    const theta = (2 * Math.PI * freq) / sampleRate;
-    const a1 = -2 * r * Math.cos(theta);
-    const a2 = r * r;
-    const out = input - a1 * z1 - a2 * z2;
-    return { out, z1: out, z2: z1 };
-  };
-
-  const words = text.split(/\s+/).filter(Boolean);
-  for (const word of words) {
-    const letters = word.replace(/[^a-zA-Z]/g, "");
-    const vowel = (letters.toLowerCase().match(/[aeiouy]/) ?? ["a"])[0];
-    const [f1, f2] = formants[vowel] ?? formants.a;
-    const duration = 0.16 + Math.min(letters.length, 12) * 0.038;
-    const frames = Math.floor(duration * sampleRate);
-    const f0 = 118 + (letters.length % 5) * 3;
-
-    for (let i = 0; i < frames; i += 1) {
-      const t = i / frames;
-      const env = Math.min(t / 0.08, 1) * Math.min((1 - t) / 0.12, 1);
-      phase += (2 * Math.PI * f0) / sampleRate;
-      const glottal = phase % (2 * Math.PI) < 0.3 ? 0.7 : 0.02;
-      const r1 = resonate(glottal, f1, f1z1, f1z2);
-      f1z1 = r1.z1;
-      f1z2 = r1.z2;
-      const r2 = resonate(r1.out, f2, f2z1, f2z2);
-      f2z1 = r2.z1;
-      f2z2 = r2.z2;
-      samples.push(Math.max(-1, Math.min(1, r2.out * env * 0.18)));
-    }
-
-    const pause = /[.!?]$/.test(word) ? 0.28 : /[,;:]$/.test(word) ? 0.16 : 0.06;
-    pushSilence(pause);
+async function probeDurationSeconds(mediaPath: string): Promise<number> {
+  const { stdout } = await run("ffprobe", [
+    "-v",
+    "error",
+    "-show_entries",
+    "format=duration",
+    "-of",
+    "default=nw=1:nk=1",
+    mediaPath,
+  ]);
+  const duration = Number.parseFloat(stdout.trim());
+  if (!Number.isFinite(duration) || duration <= 0) {
+    throw new Error(`Could not read duration from ${mediaPath}`);
   }
-
-  const dataSize = samples.length * 2;
-  const buffer = Buffer.alloc(44 + dataSize);
-  buffer.write("RIFF", 0);
-  buffer.writeUInt32LE(36 + dataSize, 4);
-  buffer.write("WAVE", 8);
-  buffer.write("fmt ", 12);
-  buffer.writeUInt32LE(16, 16);
-  buffer.writeUInt16LE(1, 20);
-  buffer.writeUInt16LE(1, 22);
-  buffer.writeUInt32LE(sampleRate, 24);
-  buffer.writeUInt32LE(sampleRate * 2, 28);
-  buffer.writeUInt16LE(2, 32);
-  buffer.writeUInt16LE(16, 34);
-  buffer.write("data", 36);
-  buffer.writeUInt32LE(dataSize, 40);
-  for (let i = 0; i < samples.length; i += 1) {
-    buffer.writeInt16LE(Math.round(samples[i] * 32767), 44 + i * 2);
-  }
-  return buffer;
+  return duration;
 }
 
-export async function synthesizeVoice(
-  text: string,
-  wavPath: string,
-): Promise<TtsEngine> {
-  const engine = resolveTtsEngine();
-  if (engine === "espeak-ng") {
+async function ffmpegToWav(inputPath: string, wavPath: string, extraAf: string[] = []): Promise<void> {
+  const af = ["silenceremove=start_periods=1:start_threshold=-40dB:start_duration=0.04", ...extraAf];
+  await run("ffmpeg", [
+    "-y",
+    "-i",
+    inputPath,
+    "-ac",
+    "1",
+    "-ar",
+    "24000",
+    "-af",
+    af.join(","),
+    wavPath,
+  ]);
+}
+
+function parseWordsFile(raw: string): WordTiming[] {
+  const parsed = JSON.parse(raw) as Array<{ text: string; start: number; end: number }>;
+  return parsed
+    .filter((word) => word.text && Number.isFinite(word.start) && Number.isFinite(word.end))
+    .map((word) => ({
+      text: word.text.replace(/[^\w$']+/g, ""),
+      start: word.start,
+      end: word.end,
+    }))
+    .filter((word) => word.text.length > 0);
+}
+
+async function synthesizeEdge(text: string, wavPath: string): Promise<WordTiming[]> {
+  const tmp = await mkdtemp(path.join(os.tmpdir(), "yt-factory-edge-"));
+  const media = path.join(tmp, "voice.mp3");
+  const wordsFile = path.join(tmp, "words.json");
+  try {
     await run(
-      ESPEAK_BIN,
-      ["-v", "en-us", "-s", "145", "-p", "38", "-w", wavPath, "--stdin"],
+      PYTHON_BIN,
+      [
+        EDGE_HELPER,
+        "--voice",
+        EDGE_VOICE,
+        "--rate",
+        EDGE_RATE,
+        "--media",
+        media,
+        "--words",
+        wordsFile,
+      ],
       text,
     );
-    return engine;
+    await ffmpegToWav(media, wavPath);
+    return parseWordsFile(await readFile(wordsFile, "utf8"));
+  } finally {
+    await rm(tmp, { recursive: true, force: true });
   }
-
-  await writeFile(wavPath, synthesizeMockWav(text));
-  return engine;
 }
 
-export function narrationText(hook: string, beats: string[], cta: string): string {
-  return [hook, ...beats, cta].join(". ");
+async function synthesizePiper(text: string, wavPath: string): Promise<void> {
+  const model = process.env.PIPER_MODEL;
+  if (!model) {
+    throw new Error("PIPER_MODEL is not set");
+  }
+  await run(PIPER_BIN, ["--model", model, "--output_file", wavPath], text);
+}
+
+async function synthesizeEspeak(text: string, wavPath: string): Promise<void> {
+  await run(
+    ESPEAK_BIN,
+    ["-v", "en-us", "-s", "165", "-p", "42", "-w", wavPath, "--stdin"],
+    text,
+  );
+}
+
+async function fitDuration(
+  wavPath: string,
+  words: WordTiming[],
+): Promise<{ duration: number; words: WordTiming[] }> {
+  let duration = await probeDurationSeconds(wavPath);
+  if (duration >= MIN_VIDEO_SECONDS && duration <= MAX_VIDEO_SECONDS) {
+    return { duration, words };
+  }
+
+  const target = duration > MAX_VIDEO_SECONDS ? 42 : 32;
+  const tempo = Math.min(2, Math.max(0.5, duration / target));
+  const tmp = `${wavPath}.tempo.wav`;
+  await run("ffmpeg", ["-y", "-i", wavPath, "-af", `atempo=${tempo.toFixed(3)}`, tmp]);
+  await writeFile(wavPath, await readFile(tmp));
+  await rm(tmp, { force: true });
+  duration = await probeDurationSeconds(wavPath);
+  return { duration, words: scaleWordTimings(words, tempo) };
+}
+
+export async function synthesizeVoice(text: string, wavPath: string): Promise<TtsResult> {
+  const preferred = await resolveTtsEngine();
+  const candidates: TtsEngine[] = ["edge-tts", "piper", "espeak-ng"];
+  const order = [preferred, ...candidates.filter((engine) => engine !== preferred)];
+
+  let lastError: unknown;
+  for (const engine of order) {
+    try {
+      if (engine === "edge-tts") {
+        if (!(await pythonHasEdgeTts())) {
+          continue;
+        }
+        const words = await synthesizeEdge(text, wavPath);
+        const fitted = await fitDuration(
+          wavPath,
+          words.length > 0 ? words : estimateWordTimings(text, await probeDurationSeconds(wavPath)),
+        );
+        return { engine, network: true, ...fitted };
+      }
+      if (engine === "piper") {
+        if (!commandExists(PIPER_BIN) || !process.env.PIPER_MODEL) {
+          continue;
+        }
+        await synthesizePiper(text, wavPath);
+        const duration = await probeDurationSeconds(wavPath);
+        const fitted = await fitDuration(wavPath, estimateWordTimings(text, duration));
+        return { engine, network: false, ...fitted };
+      }
+      if (engine === "espeak-ng") {
+        if (!commandExists(ESPEAK_BIN)) {
+          continue;
+        }
+        await synthesizeEspeak(text, wavPath);
+        const duration = await probeDurationSeconds(wavPath);
+        const fitted = await fitDuration(wavPath, estimateWordTimings(text, duration));
+        return { engine, network: false, ...fitted };
+      }
+    } catch (error) {
+      lastError = error;
+    }
+  }
+
+  const detail = lastError instanceof Error ? lastError.message : String(lastError ?? "");
+  throw new Error(
+    `Real TTS failed. Install edge-tts, piper, or espeak-ng. Last error: ${detail}`.trim(),
+  );
 }
