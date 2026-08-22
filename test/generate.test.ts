@@ -84,6 +84,16 @@ test(
     assert.match(captions, /This is not leftover cash/i);
     assert.match(captions, /^Dialogue: \d+,0:00:00\.00,/m);
     assert.match(captions, /\\c&H/i);
+    assert.ok(
+      (captions.match(/^Dialogue:/gm) ?? []).length > result.scenes.length,
+      "generate captions are not kinetic (too few dialogue events)",
+    );
+    assert.ok(
+      new Set(result.scenes.map((scene) => scene.bg0)).size >= 4,
+      "generate reused one background; frozen-frame navy slide",
+    );
+    assert.notEqual(result.engine, "mock");
+    assert.doesNotMatch(String(result.engine), /\(mock\)/i);
     assert.equal(result.engine === "edge-tts" || result.engine === "espeak-ng" || result.engine === "piper", true);
   },
 );
