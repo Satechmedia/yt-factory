@@ -1,10 +1,12 @@
 import type { Script } from "./types.ts";
 import { countWords, spokenText } from "./words.ts";
 
-/** Spoken-word ceiling for a YouTube short (~45–60 seconds). */
+/** Spoken-word ceiling for a YouTube short. Sample target is 30–45s. */
 export const SHORT_WORD_CAP = 150;
 export const MIN_BEATS = 5;
 export const MAX_BEATS = 8;
+export const MIN_VIDEO_SECONDS = 30;
+export const MAX_VIDEO_SECONDS = 45;
 
 export function validateScript(script: Script): string[] {
   const errors: string[] = [];
@@ -40,4 +42,8 @@ export function assertValidScript(script: Script): void {
   if (errors.length > 0) {
     throw new Error(`Invalid script: ${errors.join("; ")}`);
   }
+}
+
+export function durationInRange(seconds: number): boolean {
+  return seconds >= MIN_VIDEO_SECONDS && seconds <= MAX_VIDEO_SECONDS;
 }

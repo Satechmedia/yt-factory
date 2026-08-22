@@ -12,6 +12,11 @@ test("emergency fund script has a hook, 5-8 beats, and a CTA", () => {
   assert.ok(script.hook.length > 0, "hook should be present");
   assert.ok(script.cta.length > 0, "CTA should be present");
   assert.ok(script.beats.length >= 5 && script.beats.length <= 8);
+  assert.match(script.hook, /not leftover cash/i);
+  assert.ok(
+    countWords(script.hook) <= 8,
+    "hook must be short enough to land in the first two seconds",
+  );
   assert.match(writeScriptMarkdown(script), /^# What an emergency fund actually is/m);
   assert.match(writeScriptMarkdown(script), /^## Hook/m);
   assert.match(writeScriptMarkdown(script), /^## CTA/m);

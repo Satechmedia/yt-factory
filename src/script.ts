@@ -6,29 +6,29 @@ function normalize(topic: string): string {
 }
 
 /**
- * Original plain-English money explainers. These are written here, not
- * scraped from other channels, and they are not trading signals.
+ * Original plain-English money explainers, written to be spoken.
+ * Not scraped from other channels. Not trading signals.
  */
 const CURATED: Array<{ match: (n: string) => boolean; script: Omit<Script, "topic"> }> = [
   {
     match: (n) => n.includes("emergency fund"),
     script: {
-      hook: "An emergency fund is not leftover cash. It is money that stops a surprise from becoming debt.",
+      hook: "This is not leftover cash.",
       beats: [
-        "It is a cash buffer you can spend this week without selling investments or borrowing.",
-        "It is not your retirement account, not stocks, and not the checking account you live on.",
-        "Without it, a car repair or missed paycheck often hits a card, and interest adds a second problem.",
-        "Start with one thousand dollars. Then aim for three months of must-pay bills, not your whole lifestyle.",
-        "Keep it in a separate savings account you can reach in a day or two. Not in the market.",
-        "If you would hesitate to use it tomorrow, it is not an emergency fund.",
+        "An emergency fund stops a surprise from becoming debt.",
+        "It's cash you can grab this week. No selling stocks. No borrowing.",
+        "Not your 401k. Not the market. Not the checking you live on.",
+        "Car dies or a paycheck slips? Without this, it hits a card, then interest is problem two.",
+        "Start at a thousand, then three months of must-pay bills. Park it in separate savings, not the market.",
+        "If you'd hesitate to use it tomorrow, it isn't an emergency fund.",
       ],
-      cta: "Save this, then do one step today: open a separate savings account or move your first fifty dollars.",
+      cta: "Save this. Today: open that account, or move your first fifty.",
     },
   },
   {
     match: (n) => n.includes("compound interest"),
     script: {
-      hook: "Compound interest is not a hack. It is interest that starts earning interest.",
+      hook: "Compound interest is not a hack.",
       beats: [
         "You earn a return on the original cash, then on the growth that already piled up.",
         "It is not a stock tip, and not a reason to borrow so you can compound faster.",
@@ -44,7 +44,7 @@ const CURATED: Array<{ match: (n: string) => boolean; script: Omit<Script, "topi
     match: (n) =>
       n.includes("high yield") || n.includes("hysa") || n.includes("high yield savings"),
     script: {
-      hook: "A high-yield savings account is still just savings. The yield is the interest the bank pays you to park cash.",
+      hook: "A high-yield savings account is still just savings.",
       beats: [
         "You keep everyday access, but the cash sits in a separate account instead of a spending balance.",
         "It is not investing, not a CD lockup, and not a way to beat the stock market.",
@@ -58,7 +58,7 @@ const CURATED: Array<{ match: (n: string) => boolean; script: Omit<Script, "topi
   {
     match: (n) => n.includes("sinking fund"),
     script: {
-      hook: "A sinking fund is savings with a name on it. You are paying a future bill in small pieces, on purpose.",
+      hook: "A sinking fund is savings with a name on it.",
       beats: [
         "Think car insurance, a flight, or a new laptop — costs you can see coming.",
         "It is not an emergency fund. Emergencies are surprises. A sinking fund is for the bill you already expect.",
@@ -81,14 +81,14 @@ function composeGeneric(topic: string): Omit<Script, "topic"> {
   const name = shortLabel(topic);
 
   return {
-    hook: `"${name}" is not a hot tip. It is a plainer money rule, not a trick.`,
+    hook: `"${name}" is not a hot tip.`,
     beats: [
+      "It is a plainer money rule, not a trick.",
       "In one sentence, it is a way to handle cash so a normal month does not become a scramble.",
       "It is not a trading signal, not a stock pick, and not a promise you will get rich this year.",
       "You feel it when a bill lands, a balance grows, or a paycheck has to stretch.",
       "Give the money a job, keep that job boring, and do not mix it with spending money.",
       "A useful check: can you say the next step in one line — move cash, wait, or pay what you owe?",
-      "The usual mistake is treating the idea like a shortcut. Clarity first, then one small action.",
     ],
     cta: "If that framing helped, save this and take one small step this week.",
   };

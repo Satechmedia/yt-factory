@@ -14,6 +14,11 @@ Options:
   --out, -o      Output root folder (default: output)
   --aspect, -a   9:16 (default, YouTube Short) or 16:9
   --help, -h     Show this help
+
+TTS:
+  Prefers edge-tts (Microsoft online neural voices; needs network),
+  then piper if PIPER_MODEL is set, then local espeak-ng.
+  There is no silent mock-TTS fallback.
 `);
 }
 
@@ -50,6 +55,11 @@ const result = await produce({
   aspect: aspect as AspectRatio,
 });
 
+const ttsNote = result.networkTts
+  ? `${result.engine} (Microsoft online neural voices)`
+  : `${result.engine} (local)`;
+
 console.log(`Script:  ${result.files.script}`);
-console.log(`Audio:   ${result.files.audio}  (${result.engine})`);
+console.log(`Audio:   ${result.files.audio}  (${ttsNote})`);
 console.log(`Video:   ${result.files.video}  ${result.aspect}  ${result.duration.toFixed(1)}s`);
+console.log(`Scenes:  ${result.scenes.length} visual beats`);

@@ -2,17 +2,17 @@
 
 ## Hook
 
-An emergency fund is not leftover cash. It is money that stops a surprise from becoming debt.
+This is not leftover cash.
 
 ## Beats
 
-1. It is a cash buffer you can spend this week without selling investments or borrowing.
-2. It is not your retirement account, not stocks, and not the checking account you live on.
-3. Without it, a car repair or missed paycheck often hits a card, and interest adds a second problem.
-4. Start with one thousand dollars. Then aim for three months of must-pay bills, not your whole lifestyle.
-5. Keep it in a separate savings account you can reach in a day or two. Not in the market.
-6. If you would hesitate to use it tomorrow, it is not an emergency fund.
+1. An emergency fund stops a surprise from becoming debt.
+2. It's cash you can grab this week. No selling stocks. No borrowing.
+3. Not your 401k. Not the market. Not the checking you live on.
+4. Car dies or a paycheck slips? Without this, it hits a card, then interest is problem two.
+5. Start at a thousand, then three months of must-pay bills. Park it in separate savings, not the market.
+6. If you'd hesitate to use it tomorrow, it isn't an emergency fund.
 
 ## CTA
 
-Save this, then do one step today: open a separate savings account or move your first fifty dollars.
+Save this. Today: open that account, or move your first fifty.
