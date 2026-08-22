@@ -15,72 +15,72 @@ export type ScriptPart = {
 const LOOKS: Array<Pick<VisualScene, "bg0" | "bg1" | "accent" | "motif" | "gradient" | "punch">> =
   [
     {
-      bg0: "0x071422",
-      bg1: "0x163a5c",
+      bg0: "0x06101c",
+      bg1: "0x1f5f8a",
       accent: "0xf4c15a",
       motif: "slash",
       gradient: "radial",
       punch: "in",
     },
     {
-      bg0: "0x06241f",
-      bg1: "0x0f5348",
-      accent: "0x5ee0c4",
+      bg0: "0x031812",
+      bg1: "0x0d7a58",
+      accent: "0x7dffc8",
       motif: "ring",
       gradient: "linear",
       punch: "left",
     },
     {
-      bg0: "0x10141c",
-      bg1: "0x2a3d5c",
+      bg0: "0x101018",
+      bg1: "0x2f5f9a",
       accent: "0x8ec8ff",
       motif: "bars",
       gradient: "circular",
       punch: "right",
     },
     {
-      bg0: "0x2a1018",
-      bg1: "0x5a2438",
-      accent: "0xff7a9a",
+      bg0: "0x2a0812",
+      bg1: "0x8a2048",
+      accent: "0xff8aa8",
       motif: "rise",
       gradient: "linear",
       punch: "up",
     },
     {
-      bg0: "0x2a1808",
-      bg1: "0x6a3a10",
-      accent: "0xffb020",
+      bg0: "0x2a1404",
+      bg1: "0x8a4a0c",
+      accent: "0xffc040",
       motif: "stack",
       gradient: "radial",
       punch: "in",
     },
     {
-      bg0: "0x0c2214",
-      bg1: "0x1f5a34",
-      accent: "0x7dffb2",
+      bg0: "0x082014",
+      bg1: "0x1f7a40",
+      accent: "0x8affb4",
       motif: "lane",
       gradient: "linear",
       punch: "left",
     },
     {
-      bg0: "0x0c1c2e",
-      bg1: "0x1f4a78",
-      accent: "0x6cb6ff",
+      bg0: "0x081828",
+      bg1: "0x1f5ca0",
+      accent: "0x74c0ff",
       motif: "pulse",
       gradient: "spiral",
       punch: "right",
     },
     {
-      bg0: "0x1a1230",
-      bg1: "0x3e2870",
-      accent: "0xd7b3ff",
+      bg0: "0x180c2c",
+      bg1: "0x5a38a0",
+      accent: "0xe0b8ff",
       motif: "frame",
       gradient: "radial",
       punch: "in",
     },
     {
-      bg0: "0x08140f",
-      bg1: "0x1c4030",
+      bg0: "0x06140e",
+      bg1: "0x2a6040",
       accent: "0xe8ff6a",
       motif: "frame",
       gradient: "circular",
@@ -130,7 +130,7 @@ export function estimateWordTimings(text: string, duration: number): WordTiming[
     const slice = (weights[i] / total) * duration;
     const start = cursor;
     const end = i === raw.length - 1 ? duration : cursor + slice;
-    words.push({ text: raw[i].replace(/[^\w$']+/g, ""), start, end });
+    words.push({ text: raw[i].replace(/[^\w$'-]+/g, ""), start, end });
     cursor = end;
   }
   return words;

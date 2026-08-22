@@ -21,8 +21,14 @@ test("kinetic captions put the hook on screen at 0 and highlight words", () => {
     fontName: "Inter",
   });
 
-  assert.match(ass, /^Dialogue: 1,0:00:00\.00,/m);
+  assert.match(ass, /^Dialogue: 1,0:00:00\.00,0:00:0[2-9]/m);
   assert.match(ass, /This is not leftover cash/);
+  assert.match(ass, /An/);
+  assert.match(ass, /emergency/);
+  assert.match(ass, /fund/);
+  assert.doesNotMatch(ass, /debt It's/);
+  assert.doesNotMatch(ass, /live on Car/);
+  assert.doesNotMatch(ass, /week No/);
   assert.match(ass, /\\c&H/i);
   assert.match(ass, /Style: Hook,/);
   assert.ok((ass.match(/^Dialogue:/gm) ?? []).length > scenes.length);

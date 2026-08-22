@@ -67,47 +67,48 @@ export async function probeMeanVolumeDb(mediaPath: string): Promise<number> {
 function motifFilters(scene: VisualScene): string[] {
   const a = scene.accent;
   const filters = [
-    `drawbox=x=0:y=0:w=iw:h=16:color=${a}:t=fill`,
-    `drawbox=x=0:y=ih-16:w=iw:h=16:color=${a}@0.55:t=fill`,
+    `drawbox=x=0:y=0:w=iw:h=18:color=${a}:t=fill`,
+    `drawbox=x=0:y=ih-18:w=iw:h=18:color=${a}@0.65:t=fill`,
+    `drawbox=x=(iw-460)/2:y=52:w=460:h=70:color=black@0.38:t=fill`,
   ];
 
   switch (scene.motif) {
     case "slash":
-      filters.push(`drawbox=x=iw*0.07:y=0:w=iw*0.10:h=ih:color=${a}@0.20:t=fill`);
-      filters.push(`drawbox=x=iw*0.76:y=ih*0.10:w=iw*0.16:h=iw*0.16:color=${a}@0.18:t=fill`);
+      filters.push(`drawbox=x=iw*0.05:y=0:w=iw*0.14:h=ih*0.42:color=${a}@0.32:t=fill`);
+      filters.push(`drawbox=x=iw*0.70:y=ih*0.10:w=iw*0.20:h=iw*0.20:color=${a}@0.30:t=fill`);
       break;
     case "ring":
-      filters.push(`drawbox=x=(iw-440)/2:y=ih*0.16:w=440:h=440:color=${a}@0.16:t=24`);
-      filters.push(`drawbox=x=(iw-200)/2:y=ih*0.16+120:w=200:h=200:color=${a}@0.22:t=fill`);
+      filters.push(`drawbox=x=(iw-400)/2:y=ih*0.11:w=400:h=400:color=${a}@0.28:t=30`);
+      filters.push(`drawbox=x=(iw-168)/2:y=ih*0.11+116:w=168:h=168:color=${a}@0.40:t=fill`);
       break;
     case "bars":
-      filters.push(`drawbox=x=iw*0.12:y=ih*0.20:w=iw*0.64:h=40:color=${a}@0.36:t=fill`);
-      filters.push(`drawbox=x=iw*0.12:y=ih*0.20+78:w=iw*0.48:h=40:color=${a}@0.22:t=fill`);
-      filters.push(`drawbox=x=iw*0.12:y=ih*0.20+156:w=iw*0.34:h=40:color=${a}@0.12:t=fill`);
+      filters.push(`drawbox=x=iw*0.12:y=ih*0.13:w=iw*0.72:h=52:color=${a}@0.50:t=fill`);
+      filters.push(`drawbox=x=iw*0.12:y=ih*0.13+78:w=iw*0.54:h=52:color=${a}@0.32:t=fill`);
+      filters.push(`drawbox=x=iw*0.12:y=ih*0.13+156:w=iw*0.36:h=52:color=${a}@0.18:t=fill`);
       break;
     case "rise":
-      filters.push(`drawbox=x=iw*0.12:y=ih*0.52:w=52:h=ih*0.24:color=${a}@0.16:t=fill`);
-      filters.push(`drawbox=x=iw*0.12+78:y=ih*0.40:w=52:h=ih*0.36:color=${a}@0.28:t=fill`);
-      filters.push(`drawbox=x=iw*0.12+156:y=ih*0.28:w=52:h=ih*0.48:color=${a}@0.44:t=fill`);
+      filters.push(`drawbox=x=iw*0.16:y=ih*0.26:w=70:h=ih*0.16:color=${a}@0.24:t=fill`);
+      filters.push(`drawbox=x=iw*0.16+90:y=ih*0.20:w=70:h=ih*0.22:color=${a}@0.36:t=fill`);
+      filters.push(`drawbox=x=iw*0.16+180:y=ih*0.13:w=70:h=ih*0.29:color=${a}@0.52:t=fill`);
       break;
     case "stack":
-      filters.push(`drawbox=x=iw*0.10:y=ih*0.18:w=iw*0.80:h=170:color=white@0.07:t=fill`);
-      filters.push(`drawbox=x=iw*0.10:y=ih*0.18:w=12:h=170:color=${a}:t=fill`);
-      filters.push(`drawbox=x=iw*0.10:y=ih*0.18+200:w=iw*0.80:h=170:color=white@0.10:t=fill`);
-      filters.push(`drawbox=x=iw*0.10:y=ih*0.18+200:w=12:h=170:color=${a}:t=fill`);
+      filters.push(`drawbox=x=iw*0.10:y=ih*0.12:w=iw*0.80:h=140:color=white@0.10:t=fill`);
+      filters.push(`drawbox=x=iw*0.10:y=ih*0.12:w=16:h=140:color=${a}:t=fill`);
+      filters.push(`drawbox=x=iw*0.10:y=ih*0.12+164:w=iw*0.80:h=140:color=white@0.14:t=fill`);
+      filters.push(`drawbox=x=iw*0.10:y=ih*0.12+164:w=16:h=140:color=${a}:t=fill`);
       break;
     case "lane":
-      filters.push(`drawbox=x=iw*0.08:y=ih*0.26:w=iw*0.84:h=20:color=${a}@0.28:t=fill`);
-      filters.push(`drawbox=x=iw*0.08:y=ih*0.26+86:w=iw*0.84:h=120:color=white@0.06:t=fill`);
-      filters.push(`drawbox=x=iw*0.08:y=ih*0.26+86:w=iw*0.30:h=120:color=${a}@0.22:t=fill`);
+      filters.push(`drawbox=x=iw*0.08:y=ih*0.14:w=iw*0.84:h=26:color=${a}@0.40:t=fill`);
+      filters.push(`drawbox=x=iw*0.08:y=ih*0.14+54:w=iw*0.84:h=170:color=white@0.08:t=fill`);
+      filters.push(`drawbox=x=iw*0.08:y=ih*0.14+54:w=iw*0.34:h=170:color=${a}@0.30:t=fill`);
       break;
     case "pulse":
-      filters.push(`drawbox=x=iw*0.18:y=ih*0.18:w=iw*0.64:h=iw*0.64:color=${a}@0.10:t=fill`);
-      filters.push(`drawbox=x=iw*0.27:y=ih*0.24:w=iw*0.46:h=iw*0.46:color=${a}@0.18:t=16`);
+      filters.push(`drawbox=x=iw*0.20:y=ih*0.10:w=iw*0.60:h=iw*0.38:color=${a}@0.16:t=fill`);
+      filters.push(`drawbox=x=iw*0.28:y=ih*0.14:w=iw*0.44:h=iw*0.30:color=${a}@0.28:t=18`);
       break;
     case "frame":
-      filters.push(`drawbox=x=40:y=40:w=iw-80:h=ih-80:color=${a}:t=12`);
-      filters.push(`drawbox=x=iw*0.14:y=ih*0.70:w=iw*0.72:h=16:color=${a}:t=fill`);
+      filters.push(`drawbox=x=48:y=140:w=iw-96:h=ih*0.30:color=${a}:t=16`);
+      filters.push(`drawbox=x=iw*0.18:y=ih*0.36:w=iw*0.64:h=18:color=${a}:t=fill`);
       break;
     default:
       break;
@@ -122,7 +123,7 @@ function pipFilters(scene: VisualScene, total: number): string[] {
   for (let i = 0; i < count; i += 1) {
     const color = i === scene.index % count ? scene.accent : "white@0.22";
     filters.push(
-      `drawbox=x=80+${i}*36:y=ih-78:w=22:h=8:color=${color}:t=fill`,
+      `drawbox=x=80+${i}*36:y=ih*0.445:w=22:h=10:color=${color}:t=fill`,
     );
   }
   return filters;

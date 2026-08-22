@@ -98,7 +98,7 @@ function parseWordsFile(raw: string): WordTiming[] {
   return parsed
     .filter((word) => word.text && Number.isFinite(word.start) && Number.isFinite(word.end))
     .map((word) => ({
-      text: word.text.replace(/[^\w$']+/g, ""),
+      text: word.text.replace(/[^\w$'-]+/g, ""),
       start: word.start,
       end: word.end,
     }))
