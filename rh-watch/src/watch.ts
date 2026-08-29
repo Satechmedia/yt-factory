@@ -58,7 +58,8 @@ export async function discoverNewTokens(
       toBlock,
     });
     for (const log of logs) {
-      addPairSide(log.args.token0, log.args.token1);
+      const args = log.args as { token0?: string; token1?: string };
+      addPairSide(args.token0 ?? null, args.token1 ?? null);
     }
   } catch (err) {
     console.error(`watch: PairCreated logs failed: ${err instanceof Error ? err.message : err}`);
@@ -72,7 +73,8 @@ export async function discoverNewTokens(
       toBlock,
     });
     for (const log of logs) {
-      addPairSide(log.args.token0, log.args.token1);
+      const args = log.args as { token0?: string; token1?: string };
+      addPairSide(args.token0 ?? null, args.token1 ?? null);
     }
   } catch (err) {
     console.error(`watch: PoolCreated logs failed: ${err instanceof Error ? err.message : err}`);

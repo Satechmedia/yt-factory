@@ -132,7 +132,11 @@ export async function readTax(
     abi.filter((x) => x.type === "function" && x.name).map((x) => x.name as string),
   );
   const candidates = TAX_VIEW_FNS.filter((n) => names.has(n));
-  const extra = [...names].filter((n) => /tax|fee/i.test(n) && !candidates.includes(n as (typeof TAX_VIEW_FNS)[number]));
+  const extra = [...names].filter(
+    (n) =>
+      /^(buy|sell|total)?_?(tax|fee)s?_?(rate|bps|percent)?$/i.test(n) &&
+      !candidates.includes(n as (typeof TAX_VIEW_FNS)[number]),
+  );
   const tryNames = [...candidates, ...extra].slice(0, 8);
   if (!tryNames.length) {
     return { readable: false, percent: null, note: "Tax not readable (no view fn)" };

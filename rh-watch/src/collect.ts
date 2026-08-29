@@ -154,12 +154,14 @@ export async function collectSnapshot(
     }
   }
 
+  // Only the token address (or its Blockscout address page) counts.
+  // Implementation source via getsourcecode is not "verified on this CA".
   const verified =
     sc?.isVerified === true || addrInfo?.isVerified === true
       ? true
-      : sc?.isVerified === false || source?.verified === false
+      : sc?.isVerified === false || addrInfo?.isVerified === false
         ? false
-        : sc?.isVerified ?? source?.verified ?? addrInfo?.isVerified ?? null;
+        : null;
 
   const verifiedNote =
     verified === true
