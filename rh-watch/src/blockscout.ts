@@ -74,6 +74,11 @@ async function getJson(
   }
 }
 
+/** Fail closed: only an explicit JSON `true` counts as verified. */
+export function isExplicitlyVerified(isVerifiedField: unknown): boolean {
+  return isVerifiedField === true;
+}
+
 function asRecord(v: unknown): Record<string, unknown> | null {
   return v && typeof v === "object" && !Array.isArray(v)
     ? (v as Record<string, unknown>)
@@ -157,14 +162,9 @@ export async function fetchSmartContract(address: string): Promise<SmartContract
       }))
     : [];
 
-  const isVerified =
-    typeof rec.is_verified === "boolean"
-      ? rec.is_verified
-      : abi.length > 0 && rec.name
-        ? true
-        : rec.is_verified === undefined && implementations.length
-          ? false
-          : null;
+  // Fail closed: only an explicit is_verified === true is verified.
+  // ABI + name without the flag is unverified (missing/undefined/false → KILL).
+  const isVerified = isExplicitlyVerified(rec.is_verified);
 
   return {
     isVerified,

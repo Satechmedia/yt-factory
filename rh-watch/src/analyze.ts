@@ -194,8 +194,10 @@ export function runKillList(snapshot: TokenSnapshot): Check[] {
   } else {
     checks.push({
       id: "tax",
-      kill: false,
-      reason: snapshot.tax.note || "Tax not readable — skipped",
+      kill: true,
+      reason:
+        snapshot.tax.note ||
+        "Tax unread — cannot prove ≤5% (fail closed)",
     });
   }
 

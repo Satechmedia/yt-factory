@@ -9,6 +9,7 @@ import {
   nameIsTrap,
   top10ConcentrationPercent,
 } from "../src/analyze.js";
+import { isExplicitlyVerified } from "../src/blockscout.js";
 import { assessLp } from "../src/collect.js";
 import { DISCLAIMER } from "../src/config.js";
 import { formatKillLine, formatReport } from "../src/report.js";
@@ -82,6 +83,17 @@ describe("tax units", () => {
   });
 });
 
+describe("Blockscout is_verified", () => {
+  it("passes only is_verified === true; ABI+name or missing flag is unverified", () => {
+    assert.equal(isExplicitlyVerified(true), true);
+    assert.equal(isExplicitlyVerified(false), false);
+    assert.equal(isExplicitlyVerified(undefined), false);
+    assert.equal(isExplicitlyVerified(null), false);
+    // Former heuristic: ABI present + name was treated as verified.
+    assert.equal(isExplicitlyVerified({ abi: [{}], name: "Token" }), false);
+  });
+});
+
 describe("LP assess", () => {
   it("is UNCERTAIN when lock cannot be proven", () => {
     const u = assessLp({
@@ -125,6 +137,24 @@ describe("fixtures", () => {
     const report = analyze(loadFixture("unverified.json"));
     assert.equal(report.verdict, "KILL");
     assert.ok(report.reasons.some((r) => /unverified/i.test(r)));
+  });
+
+  it("kills when is_verified is missing (not true)", () => {
+    const snap = loadFixture("unverified.json");
+    snap.verified = null;
+    snap.verifiedNote = "Verification status unknown (fail closed)";
+    const report = analyze(snap);
+    assert.equal(report.verdict, "KILL");
+    assert.ok(report.reasons.some((r) => /unverified|unknown|fail closed/i.test(r)));
+    assert.ok(report.verified !== true);
+  });
+
+  it("kills unreadable tax (cannot prove ≤5%)", () => {
+    const report = analyze(loadFixture("unreadable-tax.json"));
+    assert.equal(report.verdict, "KILL");
+    assert.ok(report.reasons.some((r) => /tax/i.test(r)));
+    assert.ok(!report.reasons.some((r) => /unverified/i.test(r)));
+    assert.ok(!report.reasons.some((r) => /skipped/i.test(r)));
   });
 
   it("kills mintable owner powers", () => {

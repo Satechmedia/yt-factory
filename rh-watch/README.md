@@ -60,7 +60,7 @@ If a check cannot be verified, the verdict is **KILL**.
 | Unverified | Blockscout `is_verified` is not true |
 | Owner powers | ABI has mint, pause, blacklist, or set-tax (implementation ABI is merged for proxies) |
 | LP lock | LP not locked, deployer holds LP, or lock is **UNCERTAIN** (V3/V4 have no classic LP token) |
-| Tax | Readable buy/sell/tax view is **above 5%**. Unreadable tax is skipped (not a kill by itself) |
+| Tax | Readable buy/sell/tax view is **above 5%**, or tax cannot be read (cannot prove ≤5%) |
 | Concentration | Holder API exists; top 10 holders excluding LP + burn **> 30%** of supply. API failure → KILL |
 | Name / symbol | Contains `robinhood`, `hood`, or `airdrop` (case insensitive). Official “• Robinhood Token” stocks match this on purpose |
 | Pool | No pool, or zero liquidity |
@@ -99,7 +99,7 @@ WETH = `0x0Bd7D308f8E1639FAb988df18A8011f41EAcAD73`. USDG = `0x5fc5360D0400a0Fd4
 
 - **Most new tokens will KILL.** V3/V4 liquidity cannot be proven locked from an LP-token holder list, so LP is **UNCERTAIN → KILL**.
 - Blockscout token list is **not** a new-token feed. Watch relies on `PairCreated` / `PoolCreated` / `TokenCreated` plus new names that appear on the first market-cap page.
-- Tax is only used when a view function actually returns a number. Hidden transfer taxes are missed.
+- Tax must be readable and ≤5%. Unreadable tax is **KILL**. Hidden transfer taxes that do not expose a view are still missed as a number, and that unread state is a KILL.
 - Holder pages are capped (a few Blockscout pages). If the API is down, fail closed.
 - Proxy clones may show implementation source via `getsourcecode` while the **token address** is still unverified — that is a KILL.
 - No locker registry on 4663 is treated as canonical. Only burned LP or a Blockscout-labeled `*lock*` holder counts as locked.
@@ -111,4 +111,4 @@ WETH = `0x0Bd7D308f8E1639FAb988df18A8011f41EAcAD73`. USDG = `0x5fc5360D0400a0Fd4
 npm test
 ```
 
-Mocked fixtures (no network): `unverified`, `mintable`, `airdrop-name`, `pass-all`.
+Mocked fixtures (no network): `unverified`, `mintable`, `airdrop-name`, `unreadable-tax`, `pass-all`.
