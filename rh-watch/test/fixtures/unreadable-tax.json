@@ -1,0 +1,59 @@
+{
+  "address": "0x6666666666666666666666666666666666666666",
+  "name": "Plain Research Token",
+  "symbol": "PLAIN",
+  "verified": true,
+  "verifiedNote": "Verified on Blockscout",
+  "ownerPowers": {
+    "mint": false,
+    "pause": false,
+    "blacklist": false,
+    "setTax": false,
+    "functions": [],
+    "owner": "0x0000000000000000000000000000000000000000",
+    "ownerRead": true
+  },
+  "tax": {
+    "readable": false,
+    "percent": null,
+    "note": "Tax not readable (no view fn)"
+  },
+  "lp": {
+    "status": "locked",
+    "note": "LP burned (100% to dead/zero)"
+  },
+  "holders": [
+    { "address": "0x000000000000000000000000000000000000dEaD", "value": "100000" },
+    { "address": "0x2222222222222222222222222222222222222222", "value": "400000" },
+    { "address": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "value": "20000" },
+    { "address": "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "value": "20000" },
+    { "address": "0xcccccccccccccccccccccccccccccccccccccccc", "value": "20000" },
+    { "address": "0xdddddddddddddddddddddddddddddddddddddddd", "value": "20000" },
+    { "address": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", "value": "20000" },
+    { "address": "0x1212121212121212121212121212121212121212", "value": "20000" },
+    { "address": "0x1313131313131313131313131313131313131313", "value": "20000" },
+    { "address": "0x1414141414141414141414141414141414141414", "value": "20000" },
+    { "address": "0x1515151515151515151515151515151515151515", "value": "20000" },
+    { "address": "0x1616161616161616161616161616161616161616", "value": "20000" },
+    { "address": "0x1717171717171717171717171717171717171717", "value": "20000" },
+    { "address": "0x1818181818181818181818181818181818181818", "value": "20000" },
+    { "address": "0x1919191919191919191919191919191919191919", "value": "20000" },
+    { "address": "0x1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a", "value": "20000" },
+    { "address": "0x1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b", "value": "20000" },
+    { "address": "0x1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c", "value": "20000" },
+    { "address": "0x1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d", "value": "20000" },
+    { "address": "0x1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e", "value": "20000" },
+    { "address": "0x1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f", "value": "20000" }
+  ],
+  "holdersNote": "21 holders from fixture",
+  "totalSupply": "1000000",
+  "pool": {
+    "address": "0x2222222222222222222222222222222222222222",
+    "kind": "v2",
+    "liquidity": "500000",
+    "note": "v2 reserves 250000+250000"
+  },
+  "poolNote": "v2 reserves 250000+250000",
+  "explorerUrl": "https://robinhoodchain.blockscout.com/token/0x6666666666666666666666666666666666666666",
+  "creator": "0x9999999999999999999999999999999999999999"
+}

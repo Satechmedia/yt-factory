@@ -1,0 +1,32 @@
+{
+  "address": "0x3333333333333333333333333333333333333333",
+  "name": "Stealth Coin",
+  "symbol": "STLTH",
+  "verified": false,
+  "verifiedNote": "Unverified on Blockscout",
+  "ownerPowers": {
+    "mint": false,
+    "pause": false,
+    "blacklist": false,
+    "setTax": false,
+    "functions": [],
+    "owner": null,
+    "ownerRead": false
+  },
+  "tax": {
+    "readable": false,
+    "percent": null,
+    "note": "Tax not readable (no view fn)"
+  },
+  "lp": {
+    "status": "UNCERTAIN",
+    "note": "LP holders unread (UNCERTAIN)"
+  },
+  "holders": null,
+  "holdersNote": "Holder API failed (fail closed)",
+  "totalSupply": "1000000",
+  "pool": null,
+  "poolNote": "No pool / zero liquidity",
+  "explorerUrl": "https://robinhoodchain.blockscout.com/token/0x3333333333333333333333333333333333333333",
+  "creator": null
+}
