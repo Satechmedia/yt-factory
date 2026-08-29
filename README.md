@@ -47,3 +47,5 @@ sudo apt-get install -y espeak-ng
 ```
 
 `ffmpeg` and `ffprobe` must be on `PATH`.
+
+Standalone Robinhood Chain token watcher (education/research, not this YouTube pipeline): see [rh-watch/](rh-watch/).
